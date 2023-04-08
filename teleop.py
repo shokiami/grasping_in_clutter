@@ -130,45 +130,31 @@ def getPose(frame):
   return pose, cv2.flip(frame, 1)
 
 def getMsg(pose):
-  MIN = 0
-  MAX = 100
-  THUMB_MAX = 60
-
   msg = [15.0] * 6
 
-  # standardize hand size
-  scalar = 4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9])
+  # scalar for standardizing hand size
+  z = 4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9])
                   + dist(pose[0], pose[13]) + dist(pose[0], pose[17]))
 
-  # index finger
-  msg[0] = scale(scalar * dist(pose[0], pose[8]), 0.9, 1.9, MIN, MAX)
-
-  # middle finger
-  msg[1] = scale(scalar * dist(pose[0], pose[12]), 0.8, 2.0, MIN, MAX)
-
-  # ring finger
-  msg[2] = scale(scalar * dist(pose[0], pose[16]), 0.7, 1.9, MIN, MAX)
-
-  # pinky finger
-  msg[3] = scale(scalar * dist(pose[0], pose[20]), 0.7, 1.8, MIN, MAX)
-
-  # thumb
-  msg[4] = scale(scalar * dist(pose[0], pose[4]), 0.9, 1.2, MIN, THUMB_MAX)
-
-  # thumb rotator
-  msg[5] = -scale(scalar * dist(pose[2], pose[17]), 0.6, 0.9, MIN, THUMB_MAX)
+  msg[0] = interpolate(z * dist(pose[0], pose[8]), 0.9, 1.9) # index finger
+  msg[1] = interpolate(z * dist(pose[0], pose[12]), 0.8, 2.0) # middle finger
+  msg[2] = interpolate(z * dist(pose[0], pose[16]), 0.7, 1.9) # ring finger
+  msg[3] = interpolate(z * dist(pose[0], pose[20]), 0.7, 1.8) # pinky finger
+  msg[4] = interpolate(z * dist(pose[0], pose[4]), 0.9, 1.2) # thumb
+  msg[5] = -interpolate(z * dist(pose[2], pose[17]), 0.6, 0.9) # thumb rotator
 
   return msg
 
-def scale(dist, real_min, real_max, control_min, control_max):
-  p = 1 - (dist - real_min) / (real_max - real_min)
-  control = p * (control_max - control_min) + control_min
-  return min(max(control, control_min), control_max)
+def interpolate(dist, real_min, real_max):
+  JOINT_MIN = 0
+  JOINT_MAX = 100
+  p = (dist - real_min) / (real_max - real_min)
+  control = p * JOINT_MIN + (1 - p) * JOINT_MAX
+  return min(max(control, JOINT_MIN), JOINT_MAX)
 
 def dist(landmark_1, landmark_2):
   dx = landmark_2.x - landmark_1.x
   dy = landmark_2.y - landmark_1.y
-  # dz = landmark_2.z - landmark_1.z
   return (dx * dx + dy * dy)**0.5
 
 if __name__ == '__main__':
