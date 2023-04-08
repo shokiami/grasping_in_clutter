@@ -130,9 +130,9 @@ def getPose(frame):
   return pose, cv2.flip(frame, 1)
 
 def getMsg(pose):
-  MIN = 5
-  MAX = 90
-  THUMB_MAX = 50
+  MIN = 0
+  MAX = 100
+  THUMB_MAX = 60
 
   msg = [15.0] * 6
 
