@@ -69,16 +69,50 @@ def generateTX(positions):
   
   return txBuf
 
-def getPose(image):
-  # To improve performance, optionally mark the image as not writeable to
-  # pass by reference.
-  image.flags.writeable = False
-  image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
-  results = hands.process(image)
+def extractData(ser):
+  pos_data = [0.0] * 6
+  touch_data = [0.0] * 30
 
-  # Draw the hand annotations on the image.
-  image.flags.writeable = True
-  image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
+  data = ser.read(1)
+  if len(data) != 1:
+    return pos_data, touch_data
+
+  replyFormat = data[0]
+  if (replyFormat & 0xF) == 2:
+    replyLen = 38
+  else:
+    replyLen = 71
+  data = ser.read(replyLen)
+
+  if len(data) == replyLen:
+
+    # Extract position data
+    for i in range(6):
+      rawData = struct.unpack('<h', data[i*4:2+(i*4)])[0]
+      pos_data[i] = rawData * 150 / 32767
+    pos_data[5] = -pos_data[5]
+
+    # Extract touch data
+    if replyLen == 71:
+      for i in range(15):
+        dualData = data[(i*3)+24:((i+1)*3)+24]
+        data1 = struct.unpack('<H', dualData[0:2])[0] & 0x0FFF
+        data2 = (struct.unpack('<H', dualData[1:3])[0] & 0xFFF0) >> 4
+        touch_data[i*2] = int(data1)
+        touch_data[(i*2)+1] = int(data2)
+
+  return pos_data, touch_data
+
+def getPose(frame):
+  # To improve performance, optionally mark the frame as not writeable to
+  # pass by reference.
+  frame.flags.writeable = False
+  frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+  results = hands.process(frame)
+
+  # Draw the hand annotations on the frame.
+  frame.flags.writeable = True
+  frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
   pose = None
   if results.multi_hand_landmarks:
@@ -86,15 +120,14 @@ def getPose(image):
       if hand.classification[0].label == 'Left':
         pose = hand_landmarks.landmark
         mp_drawing.draw_landmarks(
-          image,
+          frame,
           hand_landmarks,
           mp_hands.HAND_CONNECTIONS,
           mp_drawing_styles.get_default_hand_landmarks_style(),
           mp_drawing_styles.get_default_hand_connections_style())
 
-  # Flip the image horizontally for a selfie-view display.
-  return pose, cv2.flip(image, 1)
-
+  # Flip the frame horizontally for a selfie-view display.
+  return pose, cv2.flip(frame, 1)
 
 def getMsg(pose):
   MIN = 5
@@ -104,7 +137,8 @@ def getMsg(pose):
   msg = [15.0] * 6
 
   # standardize hand size
-  scalar = 4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9]) + dist(pose[0], pose[13]) + dist(pose[0], pose[17]))
+  scalar = 4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9])
+                  + dist(pose[0], pose[13]) + dist(pose[0], pose[17]))
 
   # index finger
   msg[0] = scale(scalar * dist(pose[0], pose[8]), 0.9, 1.9, MIN, MAX)
@@ -141,18 +175,20 @@ if __name__ == '__main__':
   ser = initSerial()
   cap = cv2.VideoCapture(0)
   msg = [15.0] * 6
+
   with mp_hands.Hands(
       model_complexity=1,
       min_detection_confidence=0.5,
       min_tracking_confidence=0.5) as hands:
+
     while cap.isOpened():
-      success, image = cap.read()
+      success, frame = cap.read()
       if not success:
         print('empty camera frame')
         continue
 
       # Get right-hand pose from mediapipe
-      pose, image = getPose(image)
+      pose, frame = getPose(frame)
 
       # Get message from pose
       if pose:
@@ -162,9 +198,9 @@ if __name__ == '__main__':
       ser.write(generateTX(msg))
 
       # Read first response byte
-      data = ser.read(1)
+      pos_data, touch_data = extractData(ser)
 
-      cv2.imshow('MediaPipe', image)
+      cv2.imshow('MediaPipe', frame)
       if cv2.waitKey(1) & 0xFF == 27:
         break
 
