@@ -4,6 +4,13 @@ import struct
 import platform
 import cv2
 import mediapipe as mp
+import csv
+import os
+
+OBJECT = 'duck'
+DATA_DIR = '../data'
+POS_CSV = os.path.join(DATA_DIR, f'{OBJECT}_pos.csv')
+TOUCH_CSV = os.path.join(DATA_DIR, f'{OBJECT}_touch.csv')
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -162,33 +169,56 @@ if __name__ == '__main__':
   cap = cv2.VideoCapture(0)
   msg = [15.0] * 6
 
-  with mp_hands.Hands(
-      model_complexity=1,
-      min_detection_confidence=0.5,
-      min_tracking_confidence=0.5) as hands:
+  if not os.path.isdir(DATA_DIR):
+    os.makedirs(DATA_DIR)
 
-    while cap.isOpened():
-      success, frame = cap.read()
-      if not success:
-        print('empty camera frame')
-        continue
+  with open(POS_CSV, 'r') as pos_csv:
+    i = sum(1 for row in pos_csv)
 
-      # Get right-hand pose from mediapipe
-      pose, frame = getPose(frame)
+  with open(POS_CSV, 'a') as pos_csv, open(TOUCH_CSV, 'a') as touch_csv:
+    pos_writer = csv.writer(pos_csv)
+    touch_writer = csv.writer(touch_csv)
 
-      # Get message from pose
-      if pose:
-        msg = getMsg(pose)
+    with mp_hands.Hands(
+        model_complexity=1,
+        min_detection_confidence=0.5,
+        min_tracking_confidence=0.5) as hands:
 
-      # Send message to psyonic hand
-      ser.write(generateTX(msg))
+      while cap.isOpened():
+        success, frame = cap.read()
+        if not success:
+          print('empty camera frame')
+          continue
 
-      # Read first response byte
-      pos_data, touch_data = extractData(ser)
+        # Get right-hand pose from mediapipe
+        pose, frame = getPose(frame)
 
-      cv2.imshow('MediaPipe', frame)
-      if cv2.waitKey(1) & 0xFF == 27:
-        break
+        # Get message from pose
+        if pose:
+          msg = getMsg(pose)
+
+        # Send message to psyonic hand
+        ser.write(generateTX(msg))
+
+        # Read first response byte
+        pos_data, touch_data = extractData(ser)
+
+        cv2.imshow('MediaPipe', frame)
+        key = cv2.waitKey(1)
+        if key & 0xFF == ord(' '):
+          if all(pos == 0 for pos in pos_data) and all(touch == 0 for touch in touch_data):
+            print()
+            print('null sample')
+            continue
+          pos_writer.writerow(pos_data)
+          touch_writer.writerow(touch_data)
+          print()
+          print(f'sample {i + 1}:')
+          print(pos_data)
+          print(touch_data)
+          i += 1
+        elif key & 0xFF == ord('q'):
+          break
 
   cap.release()
   ser.close()		
