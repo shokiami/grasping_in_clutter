@@ -7,7 +7,7 @@ import mediapipe as mp
 import csv
 import os
 
-OBJECT = 'duck'
+OBJECT = 'marker'
 DATA_DIR = '../data'
 POS_CSV = os.path.join(DATA_DIR, f'{OBJECT}_pos.csv')
 TOUCH_CSV = os.path.join(DATA_DIR, f'{OBJECT}_touch.csv')
@@ -172,8 +172,11 @@ if __name__ == '__main__':
   if not os.path.isdir(DATA_DIR):
     os.makedirs(DATA_DIR)
 
-  with open(POS_CSV, 'r') as pos_csv:
-    i = sum(1 for row in pos_csv)
+  if os.path.isfile(POS_CSV):
+    with open(POS_CSV, 'r') as pos_csv:
+      i = sum(1 for row in pos_csv)
+  else:
+    i = 0
 
   with open(POS_CSV, 'a') as pos_csv, open(TOUCH_CSV, 'a') as touch_csv:
     pos_writer = csv.writer(pos_csv)
