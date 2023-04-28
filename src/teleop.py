@@ -7,7 +7,7 @@ import mediapipe as mp
 import csv
 import os
 
-OBJECT = 'cup'
+OBJECT = 'horse'
 DATA_DIR = '../data'
 POS_CSV = os.path.join(DATA_DIR, f'{OBJECT}_pos.csv')
 TOUCH_CSV = os.path.join(DATA_DIR, f'{OBJECT}_touch.csv')
