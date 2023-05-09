@@ -3,7 +3,7 @@ import time
 import pybullet_data
 import gym
 
-class FrankaPsyonic(gym.Env):
+class PsyonicPanda(gym.Env):
   def __init__(self):
     # load env
     self.p = p
@@ -17,7 +17,7 @@ class FrankaPsyonic(gym.Env):
     self.kp = 0.01
     self.kd = 1.0
     self.max_torque = 100
-    self.robot = self.p.loadURDF('../urdfs/franka/panda_official.urdf', [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], useFixedBase=True)
+    self.robot = self.p.loadURDF('../urdfs/psyonic_panda.urdf', [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], useFixedBase=True)
     self.num_joints = self.p.getNumJoints(self.robot)
     print(f'num_joints: {self.num_joints}')
 
@@ -66,7 +66,7 @@ class FrankaPsyonic(gym.Env):
     self.p.stepSimulation()
 
 if __name__ == '__main__':
-  env = FrankaPsyonic()
+  env = PsyonicPanda()
   env.reset()
   start_t = time.time()
   while True:
