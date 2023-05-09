@@ -16,7 +16,7 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
-# Search for Serial Port to use
+# search for serial port to use
 def initSerial():
   print('Searching for serial ports...')
   com_ports_list = list(list_ports.comports())
@@ -46,34 +46,24 @@ def initSerial():
     print('Failed to Connect!')
     exit()
 
-  #Clear Buffer to start
   ser.reset_input_buffer()
     
   return ser
 
-# Generate Message to send to hand from array of positions (floating point)
+# generate msg to send to hand from pos array
 def generateTX(positions):
   txBuf = []
-  
-  # Address in byte 0
   txBuf.append((struct.pack('<B', 0x50))[0])
-  
-  # Format Header in byte 1
   txBuf.append((struct.pack('<B', 0x10))[0])
-  
-  # Position data for all 6 fingers, scaled to fixed point representation
   for i in range(0,6):
     posFixed = int(positions[i] * 32767 / 150)
     txBuf.append((struct.pack('<B',(posFixed & 0xFF)))[0])
     txBuf.append((struct.pack('<B',(posFixed >> 8) & 0xFF))[0])
-  
-  # calculate checksum
   cksum = 0
   for b in txBuf:
     cksum = cksum + b
   cksum = (-cksum) & 0xFF
   txBuf.append((struct.pack('<B', cksum))[0])
-  
   return txBuf
 
 def extractData(ser):
@@ -93,13 +83,13 @@ def extractData(ser):
 
   if len(data) == replyLen:
 
-    # Extract position data
+    # extract pos data
     for i in range(6):
       rawData = struct.unpack('<h', data[i*4:2+(i*4)])[0]
       pos_data[i] = rawData * 150 / 32767
     pos_data[5] = -pos_data[5]
 
-    # Extract touch data
+    # extract touch data
     if replyLen == 71:
       for i in range(15):
         dualData = data[(i*3)+24:((i+1)*3)+24]
@@ -111,16 +101,14 @@ def extractData(ser):
   return pos_data, touch_data
 
 def getPose(frame):
-  # To improve performance, optionally mark the frame as not writeable to
-  # pass by reference.
+  # run hand tracker
   frame.flags.writeable = False
   frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
   results = hands.process(frame)
-
-  # Draw the hand annotations on the frame.
   frame.flags.writeable = True
   frame = cv2.cvtColor(frame, cv2.COLOR_RGB2BGR)
 
+  # extract hand pose
   pose = None
   if results.multi_hand_landmarks:
     for hand, hand_landmarks in zip(results.multi_handedness, results.multi_hand_landmarks):
@@ -133,7 +121,7 @@ def getPose(frame):
           mp_drawing_styles.get_default_hand_landmarks_style(),
           mp_drawing_styles.get_default_hand_connections_style())
 
-  # Flip the frame horizontally for a selfie-view display.
+  # flip frame for selfie-view
   return pose, cv2.flip(frame, 1)
 
 def getMsg(pose):
@@ -193,17 +181,17 @@ if __name__ == '__main__':
           print('empty camera frame')
           continue
 
-        # Get right-hand pose from mediapipe
+        # get right-hand pose from mediapipe
         pose, frame = getPose(frame)
 
-        # Get message from pose
+        # get message from pose
         if pose:
           msg = getMsg(pose)
 
-        # Send message to psyonic hand
+        # send message to psyonic hand
         ser.write(generateTX(msg))
 
-        # Read first response byte
+        # read first response byte
         pos_data, touch_data = extractData(ser)
 
         cv2.imshow('MediaPipe', frame)
