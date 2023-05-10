@@ -14,7 +14,7 @@ class PsyonicPanda(gym.Env):
 
     # load robot
     self.dof = 7
-    self.kp = 0.01
+    self.kp = 0.1
     self.kd = 1.0
     self.max_torque = 100
     self.robot = self.p.loadURDF('../urdfs/psyonic_panda.urdf', [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], useFixedBase=True)
@@ -50,7 +50,7 @@ class PsyonicPanda(gym.Env):
       joint_info = self.p.getJointInfo(self.robot, i)
       min_pos = joint_info[8]
       max_pos = joint_info[9]
-      self.p.resetJointState(self.robot, i, 0.5 * min_pos + 0.5 * max_pos)
+      self.p.resetJointState(self.robot, i, (min_pos + max_pos) / 2.0)
 
   def step(self, action):
     target_pos, target_ori = action
