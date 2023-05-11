@@ -20,9 +20,8 @@ class PsyonicPanda(gym.Env):
 
     # load robot
     self.dof = 7
-    self.kp = 0.1
+    self.kp = 0.3
     self.kd = 1.0
-    self.max_torque = 200
     self.robot = self.p.loadURDF('../urdfs/psyonic_panda.urdf', [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], useFixedBase=True)
     self.num_joints = self.p.getNumJoints(self.robot)
     print(f'num_joints: {self.num_joints}')
@@ -72,7 +71,6 @@ class PsyonicPanda(gym.Env):
                                   jointIndex=i,
                                   controlMode=self.p.POSITION_CONTROL,
                                   targetPosition=joint_angles[i],
-                                  force=self.max_torque,
                                   positionGain=self.kp,
                                   velocityGain=self.kd)
 
@@ -86,7 +84,6 @@ class PsyonicPanda(gym.Env):
                                   jointIndex=i,
                                   controlMode=self.p.POSITION_CONTROL,
                                   targetPosition=joint_angle,
-                                  force=self.max_torque,
                                   positionGain=self.kp,
                                   velocityGain=self.kd)
     # control thumb
@@ -96,7 +93,6 @@ class PsyonicPanda(gym.Env):
                                   jointIndex=i,
                                   controlMode=self.p.POSITION_CONTROL,
                                   targetPosition=joint_angle,
-                                  force=self.max_torque,
                                   positionGain=self.kp,
                                   velocityGain=self.kd)
 
@@ -148,9 +144,15 @@ def getHandXYZ(pose):
   MAX_Y = 1.0
   MIN_Z = 0.0
   MAX_Z = 1.0
+
+  # get hand x and y
   x = interpolate(pose[0].x, 1.0, 0.0, MIN_X, MAX_X)
   y = interpolate(pose[0].y, 1.0, 0.0, MIN_Y, MAX_Y)
-  z = interpolate(4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9]) + dist(pose[0], pose[13]) + dist(pose[0], pose[17])), 5.0, 10.0, MIN_Z, MAX_Z)
+
+  # get hand z
+  z = 4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9]) + dist(pose[0], pose[13]) + dist(pose[0], pose[17]))
+  z = interpolate(z, 3.0, 10.0, MIN_Z, MAX_Z)
+
   return x, y, z
 
 def interpolate(val, real_min, real_max, target_min, target_max):

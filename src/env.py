@@ -14,9 +14,8 @@ class PsyonicPanda(gym.Env):
 
     # load robot
     self.dof = 7
-    self.kp = 0.1
+    self.kp = 0.3
     self.kd = 1.0
-    self.max_torque = 100
     self.robot = self.p.loadURDF('../urdfs/psyonic_panda.urdf', [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], useFixedBase=True)
     self.num_joints = self.p.getNumJoints(self.robot)
     print(f'num_joints: {self.num_joints}')
@@ -60,7 +59,6 @@ class PsyonicPanda(gym.Env):
                                   jointIndex=i,
                                   controlMode=self.p.POSITION_CONTROL,
                                   targetPosition=joint_angles[i],
-                                  force=self.max_torque,
                                   positionGain=self.kp,
                                   velocityGain=self.kd)
     self.p.stepSimulation()
