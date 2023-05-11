@@ -27,21 +27,20 @@ class PsyonicPanda(gym.Env):
     print(f'num_joints: {self.num_joints}')
 
     # load duck
-    self.duck = self.createObject('duck', [0.0, 0.5, 0.0], [1.0, 1.0, 1.0, 1.0], 1.0)
+    self.duck = self.createObject('duck', [0.0, 0.5, 0.0], [1.0, 1.0, 1.0, 1.0], 1.0, 0.05)
 
     # reset robot
     self.reset()
 
-  def createObject(self, name, initPosition, init_ori, mass):
-    meshScale = [0.1, 0.1, 0.1]
+  def createObject(self, name, initPosition, init_ori, mass, scale):
     visualShapeId = self.p.createVisualShape(shapeType=self.p.GEOM_MESH,
                                             fileName=f'{name}.obj',
                                             rgbaColor=[1, 1, 1, 1],
                                             specularColor=[0.4, .4, 0],
-                                            meshScale=meshScale)
+                                            meshScale=[scale] * 3)
     collisionShapeId = self.p.createCollisionShape(shapeType=self.p.GEOM_MESH,
                                                   fileName=f'{name}_vhacd.obj',
-                                                  meshScale=meshScale)
+                                                  meshScale=[scale] * 3)
     return self.p.createMultiBody(baseMass=mass, # kg
                                   baseInertialFramePosition=[0, 0, 0],
                                   baseCollisionShapeIndex=collisionShapeId,
