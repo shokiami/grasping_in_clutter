@@ -233,11 +233,12 @@
         <mesh filename="psyonic/models/wristmesh.STL"/>
       </geometry>
     </visual>
-    <collision>
+    <collision name="wrist_mesh">
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
       <geometry>
         <mesh filename="psyonic/models/wristmesh.STL"/>
       </geometry>
-    </collision>
+    </collision>	
     <inertial>  <!-- the mass and inertia here are NOT correct -->
       <mass value = "0.200"/>
       <inertia ixx="978.26e-6" ixy = "87.34e-6" ixz = "322.99e-6" iyy = "1244.78e-6" iyz = "244.74e-6" izz = "456.22e-6" />
@@ -269,6 +270,12 @@
         <mesh filename="psyonic/models/FB_palm_ref_MIR.STL"/>
       </geometry>
     </visual>    
+    <collision name="palm_mesh">
+      <origin rpy = "0 0 0" xyz = "0 0 0"/>
+      <geometry>
+        <mesh filename="psyonic/models/FB_palm_ref_MIR.STL"/>
+      </geometry>
+    </collision>    	
   </link>
   <link name="index_L1" >
     <inertial>
@@ -282,6 +289,12 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </visual>
+    <collision name="index_mesh_1">
+      <origin xyz = "38.472723e-3 3.257695e-3 0.000000" rpy = "0 0 0.084474"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F1.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <link name="index_L2" >
     <inertial>
@@ -295,6 +308,12 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </visual>
+    <collision name="index_mesh_2">
+      <origin rpy = "0 0 0" xyz = "9.1241e-3 0 0"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F2.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <joint name="index_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -331,6 +350,12 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </visual>
+    <collision name="middle_mesh_1">
+      <origin xyz = "38.472723e-3 3.257695e-3 0.000000" rpy = "0 0 0.084474"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F1.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <link name="middle_L2" >
     <inertial>
@@ -344,6 +369,12 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </visual>
+    <collision name="middle_mesh_2">
+      <origin rpy = "0 0 0" xyz = "9.1241e-3 0 0"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F2.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <joint name="middle_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -380,6 +411,12 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </visual>
+    <collision name="ring_mesh_1">
+      <origin xyz = "38.472723e-3 3.257695e-3 0.000000" rpy = "0 0 0.084474"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F1.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <link name="ring_L2" >
     <inertial>
@@ -393,6 +430,12 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </visual>    
+    <collision name="ring_mesh_2">
+      <origin rpy = "0 0 0" xyz = "9.1241e-3 0 0"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F2.STL"/>
+      </geometry>
+    </collision>    	
   </link>
   <joint name="ring_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -429,6 +472,12 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </visual>
+    <collision name="pinky_mesh_1">
+      <origin xyz = "38.472723e-3 3.257695e-3 0.000000" rpy = "0 0 0.084474"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F1.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <link name="pinky_L2" >
     <inertial>
@@ -442,6 +491,12 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </visual>
+    <collision name="pinky_mesh_2">
+      <origin rpy = "0 0 0" xyz = "9.1241e-3 0 0"/>
+      <geometry>
+        <mesh filename="psyonic/models/idx-F2.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <joint name="pinky_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -478,6 +533,12 @@
         <mesh filename="psyonic/models/thumb-F1-MIR.STL"/>
       </geometry>
     </visual>
+    <collision name="thumb_mesh_1">
+      <origin xyz = " 27.8283501e-3 1.7436510745838653e-19 14.7507e-3 " rpy = " 1.832595714594045 -0.0 5.366520605522463e-18 " />
+      <geometry>
+        <mesh filename="psyonic/models/thumb-F1-MIR.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <link name="thumb_L2" >
     <inertial>
@@ -491,6 +552,12 @@
         <mesh filename="psyonic/models/thumb-F2.STL"/>
       </geometry>
     </visual>
+    <collision name="thumb_mesh_2">
+      <origin xyz = "65.18669e-3 23.34021e-3 3.93483e-3" rpy = "-3.141592 0 0.343830"/>
+      <geometry>
+        <mesh filename="psyonic/models/thumb-F2.STL"/>
+      </geometry>
+    </collision>	
   </link>
   <joint name="thumb_q1" type="revolute">
     <parent link="thumb_base"/>
