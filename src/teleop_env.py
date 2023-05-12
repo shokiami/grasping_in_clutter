@@ -4,6 +4,7 @@ import pybullet_data
 import gym
 import cv2
 import mediapipe as mp
+import numpy as np
 
 mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
@@ -27,7 +28,7 @@ class PsyonicPanda(gym.Env):
     print(f'num_joints: {self.num_joints}')
 
     # load duck
-    self.duck = self.createObject('duck', [0.0, 0.5, 0.0], [1.0, 1.0, 1.0, 1.0], 1.0, 0.05)
+    self.duck = self.createObject('duck', [0.0, 0.5, 0.0], [1.0, 1.0, 1.0, 1.0], 100.0, 0.05)
 
     # reset robot
     self.reset()
@@ -58,7 +59,7 @@ class PsyonicPanda(gym.Env):
 
   def step(self, action):
     target_pos, hand_msg = action
-    target_ori = [1.0, 0.0, 0.0, 0.0]
+    target_ori = self.p.getQuaternionFromEuler([-np.pi / 2, 0.0, 0.0])
     self.control_arm(target_pos, target_ori)
     self.control_hand(hand_msg)
     self.p.stepSimulation()
