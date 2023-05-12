@@ -275,7 +275,7 @@
       <geometry>
         <mesh filename="psyonic/models/FB_palm_ref_MIR.STL"/>
       </geometry>
-    </collision>    	
+    </collision>
   </link>
   <link name="index_L1" >
     <inertial>
@@ -294,7 +294,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <link name="index_L2" >
     <inertial>
@@ -313,7 +313,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <joint name="index_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -355,7 +355,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <link name="middle_L2" >
     <inertial>
@@ -374,7 +374,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <joint name="middle_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -416,7 +416,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <link name="ring_L2" >
     <inertial>
@@ -435,7 +435,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
-    </collision>    	
+    </collision>
   </link>
   <joint name="ring_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -477,7 +477,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <link name="pinky_L2" >
     <inertial>
@@ -496,7 +496,7 @@
       <geometry>
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <joint name="pinky_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -538,7 +538,7 @@
       <geometry>
         <mesh filename="psyonic/models/thumb-F1-MIR.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <link name="thumb_L2" >
     <inertial>
@@ -557,7 +557,7 @@
       <geometry>
         <mesh filename="psyonic/models/thumb-F2.STL"/>
       </geometry>
-    </collision>	
+    </collision>
   </link>
   <joint name="thumb_q1" type="revolute">
     <parent link="thumb_base"/>
