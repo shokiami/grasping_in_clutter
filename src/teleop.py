@@ -181,7 +181,7 @@ if __name__ == '__main__':
           print('empty camera frame')
           continue
 
-        # get right-hand pose from mediapipe
+        # get right hand pose from mediapipe
         pose, frame = getPose(frame)
 
         # get message from pose
