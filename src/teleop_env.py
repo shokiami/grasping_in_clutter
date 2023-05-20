@@ -10,25 +10,34 @@ mp_drawing = mp.solutions.drawing_utils
 mp_drawing_styles = mp.solutions.drawing_styles
 mp_hands = mp.solutions.hands
 
+SCALAR = 5.0
+TABLE_HEIGHT = 0.58
+
 class PsyonicPanda(gym.Env):
   def __init__(self):
     # load env
     self.p = p
     self.p.connect(self.p.GUI)
-    self.p.setGravity(0, 0, -9.81)
+    self.p.setGravity(0, 0, -100)
     self.p.setAdditionalSearchPath(pybullet_data.getDataPath())
     self.p.loadURDF('plane.urdf')
 
     # load robot
     self.dof = 7
-    self.kp = 0.3
+    self.kp = 0.2
     self.kd = 1.0
-    self.robot = self.p.loadURDF('../urdfs/psyonic_panda.urdf', [0.0, 0.0, 0.0], [0.0, 0.0, 0.0, 1.0], useFixedBase=True)
+    self.robot = self.p.loadURDF('../urdfs/psyonic_panda.urdf', [0.0, 0.0, TABLE_HEIGHT * SCALAR], [0.0, 0.0, 0.0, 1.0], useFixedBase=True, globalScaling=SCALAR)
+    #self.pod = self.p.loadURDF('../urdfs/amazon_pod.urdf', [3.0, 3.0, 3.0], useFixedBase=True)
+
     self.num_joints = self.p.getNumJoints(self.robot)
     print(f'num_joints: {self.num_joints}')
 
     # load duck
-    self.duck = self.createObject('duck', [0.0, 0.5, 0.0], [1.0, 1.0, 1.0, 1.0], 100.0, 0.05)
+    # self.createObject('duck', [0.0, 0.5, TABLE_HEIGHT], [1.0, 1.0, 1.0, 1.0], 100.0, 0.05)
+
+    table = self.p.loadURDF('../urdfs/table/table.urdf', [0.0, 0.5 * SCALAR, 0.0], self.p.getQuaternionFromEuler([0.0, 0.0, np.pi / 2]), globalScaling=SCALAR)
+    cube = self.p.loadURDF('../urdfs/cube/cube.urdf', [0.0, 0.5 * SCALAR, (TABLE_HEIGHT + 0.1) * SCALAR], [0.0, 0.0, 0.0, 1.0], globalScaling=0.06*SCALAR)
+    self.objs = [table, cube]
 
     # reset robot
     self.reset()
@@ -63,6 +72,7 @@ class PsyonicPanda(gym.Env):
     self.control_arm(target_pos, target_ori)
     self.control_hand(hand_msg)
     self.p.stepSimulation()
+    print(self.getTouchData())
 
   def control_arm(self, target_pos, target_ori):
     joint_angles = self.p.calculateInverseKinematics(self.robot, self.dof, target_pos, target_ori)
@@ -95,6 +105,16 @@ class PsyonicPanda(gym.Env):
                                   targetPosition=joint_angle,
                                   positionGain=self.kp,
                                   velocityGain=self.kd)
+
+  def getTouchData(self):
+    touch_data = [0.0] * 5
+    for i in range(5):
+      for obj in self.objs:
+        contact_points = self.p.getContactPoints(bodyA=self.robot, bodyB=obj, linkIndexA=11 + 3 * i)
+        for contact_point in contact_points:
+          normal_force = contact_point[9]
+          touch_data[i] += normal_force
+    return touch_data
 
 def getPose(frame):
   # run hand tracker
@@ -138,12 +158,12 @@ def getHandMsg(pose):
   return hand_msg
 
 def getHandXYZ(pose):
-  MIN_X = -1.0
-  MAX_X = 1.0
+  MIN_X = -SCALAR
+  MAX_X = SCALAR
   MIN_Y = 0.0
-  MAX_Y = 1.0
+  MAX_Y = SCALAR
   MIN_Z = 0.0
-  MAX_Z = 1.0
+  MAX_Z = SCALAR
 
   # get hand x and y
   x = interpolate(pose[0].x, 1.0, 0.0, MIN_X, MAX_X)
@@ -153,7 +173,7 @@ def getHandXYZ(pose):
   z = 4.0 / (dist(pose[0], pose[5]) + dist(pose[0], pose[9]) + dist(pose[0], pose[13]) + dist(pose[0], pose[17]))
   z = interpolate(z, 3.0, 10.0, MIN_Z, MAX_Z)
 
-  return x, y, z
+  return x, y, z + TABLE_HEIGHT * SCALAR
 
 def interpolate(val, real_min, real_max, target_min, target_max):
   p = (val - real_min) / (real_max - real_min)
@@ -194,7 +214,7 @@ if __name__ == '__main__':
 
       action = (target_pos, hand_msg)
       env.step(action)
-      time.sleep(1./120.)
+      time.sleep(1./240.)
 
       cv2.imshow('MediaPipe', frame)
       key = cv2.waitKey(1)

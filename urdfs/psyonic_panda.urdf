@@ -314,6 +314,7 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <joint name="index_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -356,6 +357,7 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <link name="middle_L2" >
     <inertial>
@@ -375,6 +377,7 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <joint name="middle_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -417,6 +420,7 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <link name="ring_L2" >
     <inertial>
@@ -436,6 +440,7 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <joint name="ring_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -478,6 +483,7 @@
         <mesh filename="psyonic/models/idx-F1.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <link name="pinky_L2" >
     <inertial>
@@ -497,6 +503,7 @@
         <mesh filename="psyonic/models/idx-F2.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <joint name="pinky_q1" type="revolute">
     <parent link="thumb_base"/>
@@ -539,6 +546,7 @@
         <mesh filename="psyonic/models/thumb-F1-MIR.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <link name="thumb_L2" >
     <inertial>
@@ -558,6 +566,7 @@
         <mesh filename="psyonic/models/thumb-F2.STL"/>
       </geometry>
     </collision>
+    <friction value= "1.0"/>
   </link>
   <joint name="thumb_q1" type="revolute">
     <parent link="thumb_base"/>
