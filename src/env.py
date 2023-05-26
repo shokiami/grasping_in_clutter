@@ -50,6 +50,11 @@ class PsyonicPanda(gym.Env):
       min_pos = joint_info[8]
       max_pos = joint_info[9]
       self.p.resetJointState(self.robot, JOINTS[i], (min_pos + max_pos) / 2.0)
+    x = (0.8 * np.random.random() - 0.4) * SCALAR
+    y = (0.7 * np.random.random() + 0.1) * SCALAR
+    z = (TABLE_HEIGHT + 0.1) * SCALAR
+    np.random.random() * SCALAR
+    self.p.resetBasePositionAndOrientation(self.cube, [x, y, z], [0.0, 0.0, 0.0, 1.0])
     return self.getObservation()
 
   def state(self):
